@@ -78,7 +78,7 @@ def mandel(n, m, itermax, xmin, xmax, ymin, ymax):
         c = c[rem]
     return img
 
-def julia(n, m, itermax, xmin, xmax, ymin, ymax):
+def julia(n, m, itermax, xmin, xmax, ymin, ymax, name):
     '''
     Fast mandelbrot computation using numpy.
  
@@ -163,25 +163,37 @@ def julia(n, m, itermax, xmin, xmax, ymin, ymax):
         # -rem is the array of points which haven't
         # escaped, in numpy -A for a boolean array A
         # is the NOT operation.
-        rem = -rem
+        rem = ~rem
         # So we select out the points in
         # z, ix, iy and c which are still to be
         # iterated on in the next step
         z = z[rem]
         ix, iy = ix[rem], iy[rem]
         # c = c[rem]
-    return img
+        timg = log(img+1)
+        #timg[timg==0] = 101
+        if( i > 10 ):
+            continue
+        ttimg = imshow(timg.T, origin='lower left')
+        ttimg.write_png(name+'_'+str(i)+'.png')
+        # ttimg.write_png(name+'_'+str(i)+'.png', noscale=True)
+    return timg
  
 if __name__=='__main__':
     from pylab import *
     import time
-    for ITER in range(0, 50) :
-        print ITER
-        #start = time.time()
-        I = julia(800, 800, 500, -2, 2, -2, 2)  
-        #print 'Time taken:', time.time()-start
+    import sys
+    if( len(sys.argv) > 1 ):
+        name = str(sys.argv[1])
+    else:
+        name = 'fc'
+    for ITER in range(0, 1):
+        # print ITER
+        # start = time.time()
+        I = julia(800, 800, 100, -2, 2, -2, 2, name)  
+        # print 'Time taken:', time.time()-start
         I[I==0] = 101
         img = imshow(I.T, origin='lower left')
-        img.write_png('julia_'+str(ITER)+'.png', noscale=True)
+        img.write_png(name+'.png')
         del I, img
     #show()
